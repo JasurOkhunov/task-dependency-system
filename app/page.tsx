@@ -1,8 +1,8 @@
 "use client";
 import { Todo } from "@prisma/client";
 import { useState, useEffect } from "react";
-import ReactFlow, { Background } from 'reactflow';
-import 'reactflow/dist/style.css';
+import ReactFlow, { Background } from "reactflow";
+import "reactflow/dist/style.css";
 
 export default function Home() {
   const [newTodo, setNewTodo] = useState("");
@@ -47,7 +47,7 @@ export default function Home() {
           body: JSON.stringify({ parentId }),
         });
         if (!depRes.ok) {
-          console.error('Failed to create dependency', await depRes.text());
+          console.error("Failed to create dependency", await depRes.text());
         }
       }
 
@@ -74,22 +74,36 @@ export default function Home() {
   };
 
   // Dependency Graph component
-  function Graph({ todos, criticalPath }: { todos: any[]; criticalPath: number[] }) {
+  function Graph({
+    todos,
+    criticalPath,
+  }: {
+    todos: any[];
+    criticalPath: number[];
+  }) {
     // Build nodes
     const nodes = todos.map((t: any, index: number) => ({
       id: t.id.toString(),
       data: {
         label: (
-          <div className={criticalPath.includes(t.id) ? "font-bold text-red-600" : ""}>
+          <div
+            className={
+              criticalPath.includes(t.id) ? "font-bold text-red-600" : ""
+            }
+          >
             <div>{t.title}</div>
             {t.dueDate && (
-              <div className="text-[10px]">Due: {new Date(t.dueDate).toLocaleDateString()}</div>
+              <div className="text-[10px]">
+                Due: {new Date(t.dueDate).toLocaleDateString()}
+              </div>
             )}
           </div>
-        )
+        ),
       },
       position: { x: (index % 5) * 180, y: Math.floor(index / 5) * 120 },
-      style: criticalPath.includes(t.id) ? { border: '2px solid red', padding: 4 } : { padding: 4 }
+      style: criticalPath.includes(t.id)
+        ? { border: "2px solid red", padding: 4 }
+        : { padding: 4 },
     }));
 
     // Build edges from parents
@@ -102,7 +116,7 @@ export default function Home() {
           source: d.parentId.toString(),
           target: t.id.toString(),
           animated: isCritical,
-          style: isCritical ? { stroke: 'red', strokeWidth: 2 } : {}
+          style: isCritical ? { stroke: "red", strokeWidth: 2 } : {},
         });
       });
     });
@@ -151,35 +165,41 @@ export default function Home() {
               Add
             </button>
           </div>
-        {/* Dependency Selection */}
-        <div className="bg-white p-3 rounded shadow text-sm">
-          <p className="font-semibold mb-2">Dependencies (this new task depends on):</p>
-          <div className="max-h-32 overflow-y-auto flex flex-col gap-1">
-            {todos.map((t: any) => (
-              <label key={t.id} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  value={t.id}
-                  checked={selectedDeps.includes(t.id)}
-                  onChange={(e) => {
-                    const id = Number(e.target.value);
-                    setSelectedDeps(prev =>
-                      e.target.checked ? [...prev, id] : prev.filter(p => p !== id)
-                    );
-                  }}
-                />
-                <span>{t.title}</span>
-              </label>
-            ))}
+          {/* Dependency Selection */}
+          <div className="bg-white p-3 rounded shadow text-sm">
+            <p className="font-semibold mb-2">
+              Dependencies (this new task depends on):
+            </p>
+            <div className="max-h-32 overflow-y-auto flex flex-col gap-1">
+              {todos.map((t: any) => (
+                <label key={t.id} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    value={t.id}
+                    checked={selectedDeps.includes(t.id)}
+                    onChange={(e) => {
+                      const id = Number(e.target.value);
+                      setSelectedDeps((prev) =>
+                        e.target.checked
+                          ? [...prev, id]
+                          : prev.filter((p) => p !== id)
+                      );
+                    }}
+                  />
+                  <span>{t.title}</span>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
           {loading && (
             <li className="bg-white bg-opacity-90 p-4 mb-4 rounded-lg shadow-lg flex items-center justify-center">
-              <span className="text-gray-500 italic">Creating task and loading image...</span>
+              <span className="text-gray-500 italic">
+                Creating task and loading image...
+              </span>
             </li>
           )}
           <ul>
-            {todos.map((todo:any) => (
+            {todos.map((todo: any) => (
               <li
                 key={todo.id}
                 className="flex bg-white bg-opacity-90 p-4 mb-4 rounded-lg shadow-lg items-start"
@@ -240,7 +260,8 @@ export default function Home() {
                   )}
                   {todo.earliestStart && (
                     <span className="text-xs text-gray-400 mt-1">
-                      Earliest Start: {new Date(todo.earliestStart).toLocaleDateString()}
+                      Earliest Start:{" "}
+                      {new Date(todo.earliestStart).toLocaleDateString()}
                     </span>
                   )}
                 </div>

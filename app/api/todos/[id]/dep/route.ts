@@ -1,8 +1,10 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { Dependency } from '@prisma/client';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { Dependency } from "@prisma/client";
 
-interface Params { params: { id: string } }
+interface Params {
+  params: { id: string };
+}
 
 // POST /api/todos/:id/dep
 // Body: { parentId: number }  meaning: task :id depends on parentId
@@ -11,10 +13,13 @@ export async function POST(req: Request, { params }: Params) {
   const { parentId } = await req.json();
 
   if (!parentId || isNaN(childId)) {
-    return NextResponse.json({ error: 'Invalid ids' }, { status: 400 });
+    return NextResponse.json({ error: "Invalid ids" }, { status: 400 });
   }
   if (parentId === childId) {
-    return NextResponse.json({ error: 'Task cannot depend on itself' }, { status: 400 });
+    return NextResponse.json(
+      { error: "Task cannot depend on itself" },
+      { status: 400 }
+    );
   }
 
   // 1. Ensure both tasks exist
@@ -23,14 +28,17 @@ export async function POST(req: Request, { params }: Params) {
     prisma.todo.findUnique({ where: { id: childId } }),
   ]);
   if (!parent || !child) {
-    return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+    return NextResponse.json({ error: "Task not found" }, { status: 404 });
   }
 
   // 2. Cycle detection: adding edge parent -> child must NOT create a cycle.
   // If child can already reach parent through existing edges, adding this edge would cycle.
   const createsCycle = await wouldCreateCycle(parentId, childId);
   if (createsCycle) {
-    return NextResponse.json({ error: 'Circular dependency detected' }, { status: 400 });
+    return NextResponse.json(
+      { error: "Circular dependency detected" },
+      { status: 400 }
+    );
   }
 
   // 3. Create dependency
@@ -42,11 +50,14 @@ export async function POST(req: Request, { params }: Params) {
 }
 
 // Simple DFS from child to see if we can reach parent
-async function wouldCreateCycle(newParentId: number, childId: number): Promise<boolean> {
+async function wouldCreateCycle(
+  newParentId: number,
+  childId: number
+): Promise<boolean> {
   // Build adjacency from existing dependencies (parent -> child)
   const deps: Dependency[] = await prisma.dependency.findMany();
   const graph = new Map<number, number[]>();
-  deps.forEach(d => {
+  deps.forEach((d) => {
     if (!graph.has(d.parentId)) graph.set(d.parentId, []);
     graph.get(d.parentId)!.push(d.childId);
   });
@@ -63,7 +74,7 @@ async function wouldCreateCycle(newParentId: number, childId: number): Promise<b
     if (node === newParentId) return true;
     if (visited.has(node)) continue;
     visited.add(node);
-    (graph.get(node) || []).forEach(n => stack.push(n));
+    (graph.get(node) || []).forEach((n) => stack.push(n));
   }
   return false;
 }
