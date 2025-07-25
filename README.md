@@ -53,3 +53,32 @@ Implement a task dependency system that allows tasks to depend on other tasks. T
 3. Submit a link to your repository in the application form.
 
 Thanks for your time and effort. We'll be in touch soon!
+
+
+
+## Solution
+
+This task dependency system enables users to create tasks, assign due dates, set dependencies, and visualize the critical path in a clean and intuitive UI. The system auto-computes each task’s **earliest start** time based on dependencies and highlights the **critical path** using red edges and borders.
+
+###  Features
+
+-  Add new tasks with due dates and optional images from Pexels
+-  While the image is being fetched, a loading spinner is displayed for better UX
+-  Assign dependencies to tasks using checkboxes
+-  Automatically calculate **earliest start** dates based on task dependencies
+-  Highlight the **critical path** visually
+-  Past-due tasks are clearly indicated in red
+-  Real-time interactive **dependency graph** rendered with React Flow
+
+### Setup Notes
+
+To run the app locally, create a `.env.local` file at the root of the project with the following:
+
+```env
+PEXELS_API_KEY=your_pexels_api_key_here
+```
+
+### 🎥 Demo Video
+
+
+[Click here to watch the demo video](https://drive.google.com/file/d/1T8_nu_HuKo2DDqWq77n264d_68Ruy9n-/view?usp=drive_link)
