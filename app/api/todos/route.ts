@@ -51,7 +51,9 @@ export async function GET() {
         const maxParentFinish = task.parents
           .map((d: any) => finishDate(d.parent).getTime())
           .reduce((a: number, b: number) => Math.max(a, b), 0);
-        earliestStart[id] = new Date(maxParentFinish);
+        const nextDay = new Date(maxParentFinish);
+        nextDay.setDate(nextDay.getDate() + 1);
+        earliestStart[id] = nextDay;
       }
     });
 
