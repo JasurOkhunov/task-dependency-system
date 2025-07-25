@@ -10,5 +10,23 @@ datasource db {
 model Todo {
   id        Int      @id @default(autoincrement())
   title     String
+  dueDate   DateTime?
+  imageUrl  String?
   createdAt DateTime  @default(now())
+
+  // A task can depend on many parents
+  parents   Dependency[] @relation("DependenciesChild")
+  // A task can be a dependency for many children
+  children  Dependency[] @relation("DependenciesParent")
+}
+
+model Dependency {
+  id       Int  @id @default(autoincrement())
+  parentId Int
+  childId  Int
+
+  parent   Todo @relation("DependenciesParent", fields: [parentId], references: [id], onDelete: Cascade)
+  child    Todo @relation("DependenciesChild", fields: [childId], references: [id], onDelete: Cascade)
+
+  @@unique([parentId, childId])
 }
